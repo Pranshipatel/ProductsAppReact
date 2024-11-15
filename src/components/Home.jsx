@@ -23,10 +23,17 @@ const Home = () => {
 
   useEffect(()=>{
     if(!filteredProducts || category == 'undefined') setfilteredProducts(products)
-    if(category != "undefined") getProductByCategory()
+    if(category != "undefined") {
+
+      // getProductByCategory()
+     setfilteredProducts(products.filter((p)=>p.category ==category))
+
+    }
+    
 
   },[category,products])
 
+  
   return ( products ? (
     <>
         <Nav/>

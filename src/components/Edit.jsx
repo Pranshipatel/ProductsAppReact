@@ -1,82 +1,101 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useContext, useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { nanoid } from 'nanoid'
+import { ProductContext } from '../utils/Context'
+import { toast } from 'react-toastify'
+
 
 const Edit = () => {
     const [products , setproducts] = useContext(ProductContext)
-    const [image, setimage] = useState("")
-    const [title, settitle] = useState("")
-    const [category, setcategory] = useState("")
-    const [description, setdescription] = useState("")
-    const [price, setprice] = useState("")
+    const {id} = useParams()
+    const [product , setproduct] = useState({
+        image:"",
+        title:"",
+        category:"",
+        price:"",
+        description:""
+    })
+
+    const changeHandler = (e)=>{
+      setproduct({...product , [e.target.name]:e.target.value})
+    }
+    
     const navigate = useNavigate();
+    
+    useEffect(()=>{
+        setproduct(products.filter((p)=> p.id == id)[0])
+    },[id])
 
     const AddProductHandler = (e)=>{
         e.preventDefault();
 
-        if(image.trim().length < 5 || 
-            title.trim().length < 5 || 
-            category.trim().length < 5 ||
-            description.trim().length < 5 || 
-            price.trim().length < 1 
+        if(
+            product.image.trim().length < 4 || 
+            product.title.trim().length < 4 || 
+            product.category.trim().length < 4 ||
+            product.description.trim().length < 4 || 
+            product.price.length < 1 
         ){
-           alert("every field must have 5 characters")
+           toast.success("Inputs must have atleast 4")
            return
         }
-        const product = {
-            id:nanoid(),
-            image,
-            title,
-            category,
-            description,
-            price
-        }
-        setproducts([...products , product]);
-        localStorage.setItem("products",JSON.stringify([...products , product]))
-        navigate("/")
+        const pi = products.findIndex((p) => p.id == id)
+        const copyData = [...products]
+        copyData[pi] = {...products[pi] , ...product}
+       
+        setproducts(copyData);
+        localStorage.setItem("products",JSON.stringify(copyData))
+        toast.success("Product updated successfully")
+        navigate(-1)
     }
 
   return (
     <div className='w-full h-screen'>
             
-    <form 
+    <form onSubmit={AddProductHandler}
     className='w-[40%] h-full m-auto flex items-center justify-center flex-col gap-4' action="">
     <h1 className='text-3xl font-semibold '>Update Products</h1>
     <input
         type="url"
         placeholder='Enter image url'
         className='bg-zinc-200 p-2 w-[100%] outline-none rounded border-none'
-        onChange={(e) => setimage(e.target.value)}
-        value={image}
+        onChange={changeHandler}
+        name='image'
+        value={product && product.image}
     />
     <input
         type="text"
         placeholder='Enter title'
         className='bg-zinc-200 p-2 w-[100%] outline-none rounded border-none'
-        onChange={(e) => settitle(e.target.value)}
-        value={title}
+        onChange={changeHandler}
+        name='title'
+        value={product && product.title}
     />
     <div className='w-[100%] flex justify-between'>
     <input
         type="text"
         placeholder='Enter category'
         className='bg-zinc-200 p-2 w-[48%] outline-none rounded border-none'
-        onChange={(e) => setcategory(e.target.value)}
-        value={category}
+        onChange={changeHandler}
+        name='category'
+        value={product && product.category}
     />
      <input
         type="number"
         placeholder='Enter price'
         className='bg-zinc-200 p-2 w-[48%] outline-none rounded border-none'
-        onChange={(e) => setprice(e.target.value)}
-        value={price}
+        onChange={changeHandler}
+        name='price'
+        value={product && product.price}
     />
     </div>
     <textarea
     type="text"
     placeholder='Enter description'
     className='bg-zinc-200 p-2 w-[100%] outline-none rounded border-none'
-    onChange={(e) => setdescription(e.target.value)}
-    value={description}
+    onChange={changeHandler}
+    name='description'
+    value={product && product.description}
     >
 
     </textarea>

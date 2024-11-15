@@ -2,6 +2,7 @@ import React, {  useContext, useState } from 'react'
 import { ProductContext } from '../utils/Context'
 import { nanoid } from 'nanoid'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 const Create = () => {
     const [products , setproducts] = useContext(ProductContext)
@@ -16,13 +17,13 @@ const Create = () => {
     const AddProductHandler = (e)=>{
         e.preventDefault();
 
-        if(image.trim().length < 5 || 
-            title.trim().length < 5 || 
-            category.trim().length < 5 ||
-            description.trim().length < 5 || 
+        if(image.trim().length < 4 || 
+            title.trim().length < 4 || 
+            category.trim().length < 4 ||
+            description.trim().length < 4 || 
             price.trim().length < 1 
         ){
-           alert("every field must have 5 characters")
+           toast.success("Inputs should have atleast 4 character")
            return
         }
         const product = {
@@ -35,6 +36,7 @@ const Create = () => {
         }
         setproducts([...products , product]);
         localStorage.setItem("products",JSON.stringify([...products , product]))
+        toast.success("Pruducts created successfully")
         navigate("/")
     }
 

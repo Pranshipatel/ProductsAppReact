@@ -14,10 +14,10 @@ const Context = (props) => {
             console.log(error)
         }
     }
-
+  console.log(products) 
     useEffect(()=>{
         getProducts()
-    })
+    },[])
   return (
     <div>
       <ProductContext.Provider value={[products, setproducts]}>
